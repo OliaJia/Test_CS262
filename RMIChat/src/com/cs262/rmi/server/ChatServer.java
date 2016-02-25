@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import com.cs262.rmi.client.ChatClientInt;
 public class ChatServer implements ChatServerInt {
@@ -78,16 +79,26 @@ public class ChatServer implements ChatServerInt {
    }
    
    // Make a group
-   public synchronized void createGroup(ChatClientInt sender, String groupName, String members) throws RemoteException{ 
-	   String[] groupMembers = members.split(",");
-	   groups.put(groupName, Arrays.asList(groupMembers));
+   public synchronized boolean createGroup(ChatClientInt sender, String groupName, String members) throws RemoteException{ 
+	   if (groups.containsKey(groupName)){
+		   return false;
+	   }else {
+		   String[] groupMembers = members.split(",");
+		   groups.put(groupName, Arrays.asList(groupMembers));
+		   return true;
+	   }	   
    }
    
    // Delete account
    public synchronized void deleteAccount(ChatClientInt client) throws RemoteException {
-       accounts.remove(client.getAccountName());
-       accountStatus.remove(client.getAccountName());
-       undeliveredMessages.remove(client.getAccountName());
+	   String accountName = client.getAccountName(); 
+       accounts.remove(accountName);
+       accountStatus.remove(accountName);
+       undeliveredMessages.remove(accountName);
+       Set<String> groupKeys = groups.keySet();
+       for (String groupname : groupKeys){
+    	   groups.get(groupname).remove(accountName);
+       }       
    }
 
    // Sign out 
@@ -96,9 +107,15 @@ public class ChatServer implements ChatServerInt {
        client.update(name, "Successfully logoff with status:"+accountStatus.get(client.getAccountName()));
    }
    
-   public synchronized void createAccount(String name, ChatClientInt client) throws RemoteException {
-	   accounts.put(name, client);
-	   accountStatus.put(name, "ONLINE");   
+   public synchronized boolean createAccount(String name, ChatClientInt client) throws RemoteException {
+	   
+	   if (accounts.containsKey(name) && accountStatus.get(name).equals("ONLINE")){
+		   return false;
+	   }else{
+		   accounts.put(name, client);
+		   accountStatus.put(name, "ONLINE");
+		   return true;
+	   }
    }
    
    public synchronized List<String> fetchUndeliveredMessages(String accountName) throws RemoteException {

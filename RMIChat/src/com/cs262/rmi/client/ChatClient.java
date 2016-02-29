@@ -14,7 +14,6 @@ public class ChatClient extends UnicastRemoteObject implements ChatClientInt, Ru
    //List of fields for client
    private ChatServerInt server;
    private String accountName;
-      
    private static final String LISTACCOUNT = ":listaccount";
    private static final String LISTGROUP = ":listgroup";
    private static final String TOACCOUNT = ":toaccount";

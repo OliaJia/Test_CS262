@@ -8,7 +8,10 @@ Open a new command window and input the following commands
 -rmic com.cs262.rmi.server.ChatServer
 -rmic com.cs262.rmi.client.ChatClient
 -rmiregistry 2001
-
+(For Windows OS, if you faced with the problem of 'class not found', you should configure your environment parameter as following:
+        name: jdk      value:  ;C:\Program Files\Java\jdk1.6.0\bin
+        name: jre      value:  ;C:\Program Files\Java\jre1.6.0\bin
+        and add %jdk%;%jre%  to path
 2. Start server
 Open a new command window 
 -cd to ~workspace/bin
